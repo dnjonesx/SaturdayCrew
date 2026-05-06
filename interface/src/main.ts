@@ -13,14 +13,20 @@ const router = createRouter({
         //     component: App,
         // },
         {
-            path: "/test",
-            name: "test", 
-            component: () => import("./components/Test.vue"),
+            path: "/",
+            alias: "/home",
+            name: "home", 
+            component: () => import("./components/Home.vue"),
         },
         {
             path: "/weatherMachine", 
             name: "Weather Machine", 
             component: () => import("./components/WeatherMachine.vue")
+        }, 
+        {
+            path: "/amongUS", 
+            name: "Among Us", 
+            component: () => import("./components/AmongUs.vue")
         }
     ]
 });

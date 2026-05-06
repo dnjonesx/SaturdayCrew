@@ -19,13 +19,41 @@ a,
   position: sticky;
   top: 0;
   overflow: hidden;
+  background-color: var(--color-background);
 }
 
-.nav-bar floater-link {
-  /* float: left; */
+.nav-item {
+  float: left;
   display: block;
   text-align: center;
-  padding: 14px;
+  padding: 10px;
+  font-size: 20px;
+  border-radius: 5px;
+}
+
+.large-text-input {
+  border-radius: 14px;
+  width: 50vw;
+  height: 8vh;
+  font-size: 25px;
+}
+
+input.large-text-input {
+  padding: 15px;
+}
+
+.center-grid {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  place-items: center;
+}
+
+.center-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  place-items: center;
 }
 
 @media (hover: hover) {

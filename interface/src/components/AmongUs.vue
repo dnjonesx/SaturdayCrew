@@ -1,5 +1,5 @@
 <template> 
-    <h1>TESTING 1 2 3</h1>
+    <h1>BRUH</h1>
 </template>
 
 
@@ -8,9 +8,11 @@
     import { defineComponent } from 'vue';
 
     export default defineComponent({
-        name: "Test",
+        name: "",
         data () {
-            
+            return {
+
+            };
         },
         methods: {
 

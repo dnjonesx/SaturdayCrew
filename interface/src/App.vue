@@ -15,9 +15,9 @@ import TheWelcome from './components/TheWelcome.vue'
   <main>
     <TheWelcome />
   </main> -->
-  <div class="nav-bar">
-    <router-link to="/test">Test</router-link>
-    <router-link to="/weatherMachine">Weather Machine</router-link>
+  <div class="nav-bar center-flex">
+    <router-link to="/home" class="nav-item">Home</router-link>
+    <router-link to="/weatherMachine" class="nav-item">Weather Machine</router-link>
   </div>
   
   <div id="app">

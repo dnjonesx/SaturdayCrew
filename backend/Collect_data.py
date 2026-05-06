@@ -24,6 +24,9 @@ ran_long = generate_longitude()
 print(f"Latitude:", {ran_lat})
 print(f"Longitude:", {ran_long})
 
+#here i would like to have it use those coordinates to reference Violet's sql to give the name of the location instead
+#print(f"Location:", {location})
+
 url = "https://api.open-meteo.com/v1/forecast"
 params = {
     "latitude": ran_lat,

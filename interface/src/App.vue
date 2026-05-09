@@ -17,6 +17,7 @@
   <div class="nav-bar center-flex">
     <router-link to="/home" class="nav-item">Home</router-link>
     <router-link to="/weatherMachine" class="nav-item">Weather Machine</router-link>
+    <router-link to="/theWorld" class="nav-item">Travel the World</router-link>
   </div>
   
   <div id="app">

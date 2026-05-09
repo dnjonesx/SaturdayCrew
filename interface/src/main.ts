@@ -32,6 +32,11 @@ const router = createRouter({
             path: "/amongUS", 
             name: "Among Us", 
             component: () => import("./components/AmongUs.vue")
+        }, 
+        {
+            path: "/theWorld", 
+            name: "The World", 
+            component: () => import("./components/TheWorld.vue")
         }
     ]
 });

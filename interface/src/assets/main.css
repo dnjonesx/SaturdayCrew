@@ -8,6 +8,7 @@
 }
 
 a,
+button,
 .green {
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
@@ -27,8 +28,20 @@ a,
   display: block;
   text-align: center;
   padding: 10px;
+  font-size: 30px;
+  border-radius: 5px;
+  margin: auto 8px;
+}
+
+.tab {
+  float: left;
+  display: block;
+  text-align: center;
+  padding: 10px;
   font-size: 20px;
   border-radius: 5px;
+  background-color: var(--color-background);
+  margin: 4px;
 }
 
 .large-text-input {
@@ -58,6 +71,9 @@ input.large-text-input {
 
 @media (hover: hover) {
   a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+  button:hover {
     background-color: hsla(160, 100%, 37%, 0.2);
   }
 }

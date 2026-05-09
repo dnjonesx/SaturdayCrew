@@ -7,6 +7,11 @@
         <div class="large-text-input">
             <input type="text" id="location" placeholder="Enter your location here..." class="large-text-input">
         </div>
+        <br>
+
+        <div id="weather" if="weatherPulled">
+            <WeatherDisplay></WeatherDisplay>
+        </div>
     </div>
 </template>
 
@@ -16,6 +21,7 @@
     import { defineComponent } from 'vue';
     import { LocationEntered } from '@/Types/LocationEntered';
     import { StorageMode } from '@/Types/StorageMode';
+    import WeatherDisplay from './WeatherDisplay.vue';
 
     export default defineComponent({
         name: "Home",
@@ -27,7 +33,9 @@
                 left: false,
                 location_msg: "no place like home :)",
                 location: "",
-                locationEntered: LocationEntered.FALSE as LocationEntered
+                locationEntered: LocationEntered.FALSE as LocationEntered, 
+                // TODO: update to false
+                weatherPulled: true,
             };
         },
         methods: {
@@ -53,6 +61,7 @@
             // after having retrieved the user's location
             locationRetrieved(position: GeolocationPosition) {
                 this.location_msg = "hold still while we track you...";
+                // TODO: update to use data instead of local variables
                 let lat = position.coords.latitude;
                 let long = position.coords.longitude;
                 this.locationEntered = LocationEntered.COORDS_ENTERED;
@@ -114,6 +123,9 @@
             // clear amongus trekking interval
             if (this.intervalID != 0) clearInterval(this.intervalID);
         },
+        components: {
+            WeatherDisplay,
+        }
     })
 </script>
 

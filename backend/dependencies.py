@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 def install_dependencies():
-    packages = ["openmeteo-requests", "requests-cache", "retry-requests", "pandas", "numpy"]
+    packages = ["openmeteo-requests", "requests-cache", "retry-requests", "pandas", "numpy", "ipykernel"]
     for package in packages:
         try:
             __import__(package.replace('-', '_'))

@@ -4,16 +4,8 @@ import sys
 import importlib
 
 def install_dependencies():
-    # These are the names you use in 'import' statements
-    packages = {
-        "openmeteo_requests": "openmeteo-requests",
-        "requests_cache": "requests-cache",
-        "retry_requests": "retry-requests",
-        "pandas": "pandas",
-        "numpy": "numpy"
-    }
-
-    for module, install_name in packages.items():
+    packages = ["openmeteo-requests", "requests-cache", "retry-requests", "pandas", "numpy", "ipykernel"]
+    for package in packages:
         try:
             importlib.import_module(module)
         except ImportError:

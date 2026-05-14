@@ -23,8 +23,8 @@ def generate_longitude():
     return round(ran_long, 5)
 ran_long = generate_longitude()
 
-print(f"Latitude:, {ran_lat}")
-print(f"Longitude:, {ran_long}")
+print(f"Latitude: {ran_lat}")
+print(f"Longitude: {ran_long}")
 
 #here i would like to have it use those coordinates to reference Violet's sql to give the name of the location instead
 #print(f"Location:, {location}")

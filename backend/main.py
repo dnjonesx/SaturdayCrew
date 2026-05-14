@@ -1,5 +1,7 @@
 #I am thinking of using Open Meteo's free API for the weather. They also have a historical API which includes weather data from 1940-now. Violet might find this useful for his data processing.
 
+#I need to use flask for this to get it set up and see how to receive/send http requests for the lat and long information and then the actual weather data. 
+
 import openmeteo_requests
 import requests_cache
 from retry_requests import retry
@@ -21,11 +23,11 @@ def generate_longitude():
     return round(ran_long, 5)
 ran_long = generate_longitude()
 
-print(f"Latitude:", {ran_lat})
-print(f"Longitude:", {ran_long})
+print(f"Latitude: {ran_lat}")
+print(f"Longitude: {ran_long}")
 
 #here i would like to have it use those coordinates to reference Violet's sql to give the name of the location instead
-#print(f"Location:", {location})
+#print(f"Location:, {location}")
 
 url = "https://api.open-meteo.com/v1/forecast"
 params = {
@@ -49,17 +51,17 @@ rain = round(current_precipitation, None)
 def convert_kmh_to_word(wind):
     if wind == 0:
         air = "None"
-    elif wind in range(0, 19):
+    elif wind < 19:
         air = "Light"
-    elif wind in range(20, 38):
+    elif wind < 39:
         air = "Breezy"
-    elif wind in range(39, 49):
+    elif wind < 49:
         air = "Strong Breeze"
-    elif wind in range(50, 61):
+    elif wind < 61:
         air = "Very Windy"
-    elif wind in range(62, 88):
+    elif wind < 88:
         air = "Gale"
-    elif wind in range(89, 117):
+    elif wind < 117:
         air = "Bad Storm"
     else:
         air = "Hurricane"
@@ -70,11 +72,11 @@ air = convert_kmh_to_word(wind)
 def convert_mm_to_word(rain):
     if rain == 0:
         water = "None"
-    elif rain in range(0, 3):
+    elif rain < 3:
         water = "Light"
-    elif rain in range(3, 8):
+    elif rain < 8:
         water = "Moderate"
-    elif rain in range(8, 50):
+    elif rain < 50:
         water = "Heavy"
     else:
         water = "Violent"

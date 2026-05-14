@@ -1,0 +1,8 @@
+#For the future, I will need to open a terminal into the backend folder and then activate the venv
+#with the source .venv/bin/activate and then I can run my file
+
+openmeteo-requests
+requests-cache
+retry-requests
+pandas
+numpy

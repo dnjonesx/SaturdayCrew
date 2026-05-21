@@ -27,15 +27,12 @@ cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
 retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
 openmeteo = openmeteo_requests.Client(session = retry_session)
 
-def generate_latitude():
-    ran_lat = np.random.uniform(-90.0, 90.0)
-    return round(ran_lat, 5)
-ran_lat = generate_latitude()
+def generate_location(num1, num2):
+    result = np.random.uniform(num1, num2)
+    return round(result, 5)
 
-def generate_longitude():
-    ran_long = np.random.uniform(-180.0, 180.0)
-    return round(ran_long, 5)
-ran_long = generate_longitude()
+ran_lat = generate_location(-90.0, 90.0)
+ran_long = generate_location(-180.0, 180.0)
 
 print(f"Latitude: {ran_lat}")
 print(f"Longitude: {ran_long}")

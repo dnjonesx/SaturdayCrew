@@ -114,4 +114,4 @@ def serve_static(path):
 def random_weather():
     return None
 
-app.run(host="0.0.0.0", port=80)
+app.run(host="0.0.0.0", port=9000)

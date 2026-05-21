@@ -7,6 +7,20 @@ import requests_cache
 from retry_requests import retry
 import pandas as pd
 import numpy as np
+import os
+from flask import Flask, send_from_directory, render_template
+
+#dir clarification so that I don't have to move Emily's files
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(backend_dir)
+interface_dir = os.path.join(root_dir, 'interface')
+
+#set up Flask
+app = Flask(
+    __name__,
+    template_folder=interface_dir,
+    static_folder=interface_dir
+)
 
 #Setting up API client with cache and retry
 cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
@@ -84,6 +98,20 @@ def convert_mm_to_word(rain):
 
 water = convert_mm_to_word(rain)
 
-print(f"Current Temperature: {current_temperature_2m} °C")
-print(f"Current Precipitation: {water}")
-print(f"Wind Speed: {air}")
+#print(f"Current Temperature: {current_temperature_2m} °C")
+#print(f"Current Precipitation: {water}")
+#print(f"Wind Speed: {air}")
+
+@app.route('/')
+def index():
+    return send_from_directory(interface_dir, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory(interface_dir, path)
+
+@app.route('/random')
+def random_weather():
+    return None
+
+app.run(host="0.0.0.0", port=80)

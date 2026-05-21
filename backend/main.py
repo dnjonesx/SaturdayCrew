@@ -27,18 +27,15 @@ cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
 retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
 openmeteo = openmeteo_requests.Client(session = retry_session)
 
-def generate_location(num1, num2):
-    result = np.random.uniform(num1, num2)
+def generate_location(min, max):
+    result = np.random.uniform(min, max)
     return round(result, 5)
 
 ran_lat = generate_location(-90.0, 90.0)
 ran_long = generate_location(-180.0, 180.0)
 
-print(f"Latitude: {ran_lat}")
-print(f"Longitude: {ran_long}")
-
-#here i would like to have it use those coordinates to reference Violet's sql to give the name of the location instead
-#print(f"Location:, {location}")
+#print(f"Latitude: {ran_lat}")
+#print(f"Longitude: {ran_long}")
 
 url = "https://api.open-meteo.com/v1/forecast"
 params = {

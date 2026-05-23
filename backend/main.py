@@ -75,6 +75,10 @@ current_wind = current.Variables(2).Value()
 air = convert_kmh_to_word(round(current_wind, None))
 water = convert_mm_to_word(round(current_water, None))
 
+@app.route('/')
+def home():
+    print("This is the home page")
+
 @app.route('/location/<id>', methods=['GET'])
 def location():
     return None #temporarily

@@ -20,37 +20,37 @@ cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
 retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
 openmeteo = openmeteo_requests.Client(session = retry_session)
 
-def generate_location(min, max):
+def generate_location(min: int, max: int):
     result = np.random.uniform(min, max)
     return round(result, 5)
 
-def convert_kmh_to_word(wind):
-    if wind == 0:
+def convert_kmh_to_word(current_wind):
+    if current_wind == 0:
         air = "None"
-    elif wind < 19:
+    elif current_wind < 19:
         air = "Light"
-    elif wind < 39:
+    elif current_wind < 39:
         air = "Breezy"
-    elif wind < 49:
+    elif current_wind < 49:
         air = "Strong Breeze"
-    elif wind < 61:
+    elif current_wind < 61:
         air = "Very Windy"
-    elif wind < 88:
+    elif current_wind < 88:
         air = "Gale"
-    elif wind < 117:
+    elif current_wind < 117:
         air = "Bad Storm"
     else:
         air = "Hurricane"
     return air
 
-def convert_mm_to_word(rain):
-    if rain == 0:
+def convert_mm_to_word(current_water):
+    if current_water == 0:
         water = "None"
-    elif rain < 3:
+    elif current_water < 3:
         water = "Light"
-    elif rain < 8:
+    elif current_water < 8:
         water = "Moderate"
-    elif rain < 50:
+    elif current_water < 50:
         water = "Heavy"
     else:
         water = "Violent"
@@ -58,14 +58,15 @@ def convert_mm_to_word(rain):
 
 ran_lat = generate_location(-90.0, 90.0)
 ran_long = generate_location(-180.0, 180.0)
-params = {
+
+
+ran_params = {
         "latitude": ran_lat,
         "longitude": ran_long,
         "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
         "temperature_unit": "celsius",
     }
-    
-responses = openmeteo.weather_api(url, params = params)
+responses = openmeteo.weather_api(url, params = ran_params)
 response = responses[0]
 current = response.Current()
 current_temp = round(current.Variables(0).Value(), 2)

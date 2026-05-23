@@ -8,19 +8,12 @@ from retry_requests import retry
 import pandas as pd
 import numpy as np
 import os
-from flask import Flask, send_from_directory, render_template
+from flask import Flask
 
-#dir clarification so that I don't have to move Emily's files
-backend_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.dirname(backend_dir)
-interface_dir = os.path.join(root_dir, 'interface')
+url = "https://api.open-meteo.com/v1/forecast"
 
 #set up Flask
-app = Flask(
-    __name__,
-    template_folder=interface_dir,
-    static_folder=interface_dir
-)
+app = Flask(__name__)
 
 #Setting up API client with cache and retry
 cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
@@ -30,31 +23,6 @@ openmeteo = openmeteo_requests.Client(session = retry_session)
 def generate_location(min, max):
     result = np.random.uniform(min, max)
     return round(result, 5)
-
-ran_lat = generate_location(-90.0, 90.0)
-ran_long = generate_location(-180.0, 180.0)
-
-#print(f"Latitude: {ran_lat}")
-#print(f"Longitude: {ran_long}")
-
-url = "https://api.open-meteo.com/v1/forecast"
-params = {
-    "latitude": ran_lat,
-    "longitude": ran_long,
-    "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
-    "temperature_unit": "celsius",
-}
-
-responses = openmeteo.weather_api(url, params = params)
-response = responses[0]
-
-current = response.Current()
-current_temperature_2m = round(current.Variables(0).Value(), 2)
-current_precipitation = current.Variables(1).Value()
-current_wind_speed_10m = current.Variables(2).Value()
-
-wind = round(current_wind_speed_10m, None)
-rain = round(current_precipitation, None)
 
 def convert_kmh_to_word(wind):
     if wind == 0:
@@ -75,8 +43,6 @@ def convert_kmh_to_word(wind):
         air = "Hurricane"
     return air
 
-air = convert_kmh_to_word(wind)
-
 def convert_mm_to_word(rain):
     if rain == 0:
         water = "None"
@@ -90,22 +56,40 @@ def convert_mm_to_word(rain):
         water = "Violent"
     return water
 
-water = convert_mm_to_word(rain)
+ran_lat = generate_location(-90.0, 90.0)
+ran_long = generate_location(-180.0, 180.0)
+params = {
+        "latitude": ran_lat,
+        "longitude": ran_long,
+        "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
+        "temperature_unit": "celsius",
+    }
+    
+responses = openmeteo.weather_api(url, params = params)
+response = responses[0]
+current = response.Current()
+current_temp = round(current.Variables(0).Value(), 2)
+current_water = current.Variables(1).Value()
+current_wind = current.Variables(2).Value()
+air = convert_kmh_to_word(round(current_wind, None))
+water = convert_mm_to_word(round(current_water, None))
 
-#print(f"Current Temperature: {current_temperature_2m} °C")
-#print(f"Current Precipitation: {water}")
-#print(f"Wind Speed: {air}")
-
-@app.route('/')
-def index():
-    return send_from_directory(interface_dir, 'index.html')
-
-@app.route('/<path:path>')
-def serve_static(path):
-    return send_from_directory(interface_dir, path)
+@app.route('/location/<id>', methods=['GET'])
+def location():
+    return None #temporarily
 
 @app.route('/random')
 def random_weather():
-    return None
+    random_data = {
+        "latitude": ran_lat,
+        "longitude": ran_long,
+        "location": None,#i need to get location name from violet
+        "timezone": None,#i need to get location name from violet
+        "timezone_abbreviation": None,#i need to get location name from violet
+        "temperature_2m": current_temp,
+        "wind": air,
+        "precipitation": water
+    }
+    return random_data  
 
 app.run(host="0.0.0.0", port=9000)

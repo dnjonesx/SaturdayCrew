@@ -56,28 +56,9 @@ def convert_mm_to_word(current_water):
         water = "Violent"
     return water
 
-ran_lat = generate_location(-90.0, 90.0)
-ran_long = generate_location(-180.0, 180.0)
-
-
-ran_params = {
-        "latitude": ran_lat,
-        "longitude": ran_long,
-        "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
-        "temperature_unit": "celsius",
-    }
-responses = openmeteo.weather_api(url, params = ran_params)
-response = responses[0]
-current = response.Current()
-current_temp = round(current.Variables(0).Value(), 2)
-current_water = current.Variables(1).Value()
-current_wind = current.Variables(2).Value()
-air = convert_kmh_to_word(round(current_wind, None))
-water = convert_mm_to_word(round(current_water, None))
-
 @app.route('/')
 def home():
-    print("This is the home page")
+    return "This is the home page"
 
 @app.route('/location/<id>', methods=['GET'])
 def location():
@@ -85,6 +66,24 @@ def location():
 
 @app.route('/random')
 def random_weather():
+    ran_lat = generate_location(-90.0, 90.0)
+    ran_long = generate_location(-180.0, 180.0)
+
+    ran_params = {
+            "latitude": ran_lat,
+            "longitude": ran_long,
+            "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
+            "temperature_unit": "celsius",
+        }
+    responses = openmeteo.weather_api(url, params = ran_params)
+    response = responses[0]
+    current = response.Current()
+    current_temp = round(current.Variables(0).Value(), 2)
+    current_water = current.Variables(1).Value()
+    current_wind = current.Variables(2).Value()
+    air = convert_kmh_to_word(round(current_wind, None))
+    water = convert_mm_to_word(round(current_water, None))
+
     random_data = {
         "latitude": ran_lat,
         "longitude": ran_long,

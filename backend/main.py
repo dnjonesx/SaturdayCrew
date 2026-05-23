@@ -66,16 +66,16 @@ def location():
 
 @app.route('/random')
 def random_weather():
-    ran_lat = generate_location(-90.0, 90.0)
-    ran_long = generate_location(-180.0, 180.0)
+    random_lat = generate_location(-90.0, 90.0)
+    random_long = generate_location(-180.0, 180.0)
 
-    ran_params = {
-            "latitude": ran_lat,
-            "longitude": ran_long,
+    random_params = {
+            "latitude": random_lat,
+            "longitude": random_long,
             "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
             "temperature_unit": "celsius",
         }
-    responses = openmeteo.weather_api(url, params = ran_params)
+    responses = openmeteo.weather_api(url, params = random_params)
     response = responses[0]
     current = response.Current()
     current_temp = round(current.Variables(0).Value(), 2)
@@ -85,8 +85,8 @@ def random_weather():
     water = convert_mm_to_word(round(current_water, None))
 
     random_data = {
-        "latitude": ran_lat,
-        "longitude": ran_long,
+        "latitude": random_lat,
+        "longitude": random_long,
         "location": None,#i need to get location name from violet
         "timezone": None,#i need to get location name from violet
         "timezone_abbreviation": None,#i need to get location name from violet

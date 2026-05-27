@@ -77,6 +77,7 @@ def local():
 
     responses = openmeteo.weather_api(url, params = local_params)
     response = responses[0]
+    
     current = response.Current()
     current_temp = round(current.Variables(0).Value(), 2)
     current_water = current.Variables(1).Value()

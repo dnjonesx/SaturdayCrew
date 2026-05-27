@@ -5,9 +5,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 
 import { StorageMode } from '@/Types/StorageMode';
+import { WeatherMode } from '@/Types/WeatherMode';
 
 // globals - need to update down below too
 const storage_mode = StorageMode.SESSIONSTORAGE;
+const weather_mode = WeatherMode.TEST;
 
 const router = createRouter({
     history: createWebHistory(),
@@ -48,6 +50,7 @@ app.use(router);
 
 // globals
 app.config.globalProperties.$storage_mode = storage_mode;
+app.config.globalProperties.$weather_mode = weather_mode;
 
 app.mount("#app");
 

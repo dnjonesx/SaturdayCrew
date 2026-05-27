@@ -4,13 +4,9 @@
         <button id="7DaysButton" class="tab" @:click="hourly = false;">This Week</button>
     </div>
 
-    <HourlyWeather v-if="hourly">
-        <template #h2test>this is also a test</template>
-    </HourlyWeather>
+    <HourlyWeather v-if="hourly" :weather=weather></HourlyWeather>
 
-    <DayWeather v-if="!hourly">
-        <template #h2test>this is a test but for daily</template>
-    </DayWeather>
+    <DailyWeather v-if="!hourly" :weather=weather></DailyWeather>
 </template>
 
 
@@ -18,21 +14,30 @@
 
     import { defineComponent } from 'vue';
     import HourlyWeather from './HourlyWeather.vue';
-    import DayWeather from './7DayWeather.vue';
+    import DailyWeather from './DailyWeather.vue';
+    import WeatherService from '@/Services/WeatherService';
+    import { WeatherMode } from '@/Types/WeatherMode';
 
     export default defineComponent({
-        name: "",
+        name: "WeatherDisplay",
         data () {
             return {
                 hourly: true,
+                // random: false,
+                // @ts-ignore
+                weather: ((this.$weather_mode == WeatherMode.TEST) ? WeatherService.getWeatherTest() : (this.random ? WeatherService.getWeatherRandom(): (this.locationName != null ? WeatherService.getWeatherFromLocation(this.locationName): ((this.latitude != null && this.longitude != null) ? WeatherService.getWeatherFromCoors(this.latitude, this.longitude): WeatherService.getWeatherTest()))  )),
+                // weather: WeatherService.getWeatherTest(),
             };
         },
-        methods: {
-
-        },
+        props: [
+            'random', 
+            'locationName',
+            'latitude',
+            'longitude'
+        ],
         components: {
             HourlyWeather,
-            DayWeather,
+            DailyWeather,
         }
     })
 </script>

@@ -69,6 +69,35 @@ input.large-text-input {
   place-items: center;
 }
 
+table {
+  min-width: 50rem;
+}
+
+table, th, td {
+  border: 1px solid white;
+  align-items: center;
+  text-align: center;
+}
+
+/* table headers */
+th {
+  font-weight: bold;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* table boxes */
+td {
+  /* max-width: 10%; */
+  padding-left: 10px;
+  padding-right: 10px;
+  padding: 10px;
+}
+
+.weatherIcon {
+  height: 50px;
+}
+
 @media (hover: hover) {
   a:hover {
     background-color: hsla(160, 100%, 37%, 0.2);

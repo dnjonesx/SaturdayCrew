@@ -8,7 +8,7 @@ from retry_requests import retry
 import pandas as pd
 import numpy as np
 import os
-from flask import Flask
+from flask import Flask, request
 
 url = "https://api.open-meteo.com/v1/forecast"
 
@@ -19,6 +19,8 @@ app = Flask(__name__)
 cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
 retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
 openmeteo = openmeteo_requests.Client(session = retry_session)
+
+
 
 def generate_location(min, max):
     result = np.random.uniform(min, max)
@@ -60,9 +62,47 @@ def convert_mm_to_word(current_water):
 def home():
     return "This is the home page"
 
-@app.route('/location/<id>', methods=['GET'])
-def location():
-    return None #temporarily
+@app.route('/local')
+def local():
+    lat = request.args.get('lat')
+    long = request.args.get('long')
+
+    local_params = {
+            "latitude": lat,
+            "longitude": long,
+            "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
+            "hourly": ["temperature_2m", "precipitation", "wind_speed_10m"],
+            "temperature_unit": "celsius",
+        }
+
+    responses = openmeteo.weather_api(url, params = local_params)
+    response = responses[0]
+    current = response.Current()
+    current_temp = round(current.Variables(0).Value(), 2)
+    current_water = current.Variables(1).Value()
+    current_wind = current.Variables(2).Value()
+    air = convert_kmh_to_word(round(current_wind, None))
+    water = convert_mm_to_word(round(current_water, None))
+
+    hourly = response.Hourly()
+    hourly_temp = round(hourly.Variables(0).Value(), 2)
+    hourly_water = hourly.Variables(1).Value()
+    hourly_wind = hourly.Variables(2).Value()
+
+    local_data = {
+        "latitude": lat,
+        "longitude": long,
+        "location": None,#i need to get location name from violet
+        "timezone": None,#i need to get location name from violet
+        "timezone_abbreviation": None,#i need to get location name from violet
+        "temperature_2m": current_temp,
+        "wind": air,
+        "precipitation": water,
+        "hourly_temp": hourly_temp,
+        "hourly_wind": hourly_wind,
+        "hourly_water": hourly_water
+    }
+    return local_data  
 
 @app.route('/random')
 def random_weather():

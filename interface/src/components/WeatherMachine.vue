@@ -13,16 +13,13 @@
 
     import { defineComponent } from 'vue';
     import type Weather from '@/Types/Weather';
+    import WeatherService from '@/Services/WeatherService';
 
     export default defineComponent({
         name: "Weather Machine",
         data () {
             return {
-                weather: {
-                    id: null, 
-                    location: "",
-                    current_weather: "",
-                } as Weather
+                weather: WeatherService.getWeatherTest(),
             };
         },
         methods: {

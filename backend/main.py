@@ -7,7 +7,6 @@ import requests_cache
 from retry_requests import retry
 import pandas as pd
 import numpy as np
-import os
 from flask import Flask, request
 
 url = "https://api.open-meteo.com/v1/forecast"
@@ -19,8 +18,6 @@ app = Flask(__name__)
 cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
 retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
 openmeteo = openmeteo_requests.Client(session = retry_session)
-
-
 
 def generate_location(min, max):
     result = np.random.uniform(min, max)
@@ -71,7 +68,7 @@ def local():
             "latitude": lat,
             "longitude": long,
             "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
-            "hourly": ["temperature_2m", "precipitation", "wind_speed_10m"],
+            "hourly": ["temperature_2m"],
             "temperature_unit": "celsius",
         }
 
@@ -86,9 +83,25 @@ def local():
     water = convert_mm_to_word(round(current_water, None))
 
     hourly = response.Hourly()
-    hourly_temp = round(hourly.Variables(0).Value(), 2)
-    hourly_water = hourly.Variables(1).Value()
-    hourly_wind = hourly.Variables(2).Value()
+    hourly_temp = hourly.Variables(0).ValuesAsNumpy()
+    hourly_data = {
+    "date": pd.date_range(
+            start = pd.to_datetime(hourly.Time(), unit = "s", utc = True),
+            end =  pd.to_datetime(hourly.TimeEnd(), unit = "s", utc = True),
+            freq = pd.Timedelta(seconds = hourly.Interval()),
+            inclusive = "left"
+        )
+    }
+
+    hourly_data["temperature_2m"] = hourly_temp
+
+    hourly_dataframe = pd.DataFrame(data = hourly_data)
+
+    hourly_dataframe['date'] = hourly_dataframe['date'].dt.strftime('%Y-%m-%d %H:%M')
+
+    hourly_dataframe['temperature_2m'] = hourly_dataframe['temperature_2m'].round(0).astype(int)
+
+    json_hourly_dataframe = hourly_dataframe.to_json(orient='records')
 
     local_data = {
         "latitude": lat,
@@ -99,9 +112,7 @@ def local():
         "temperature_2m": current_temp,
         "wind": air,
         "precipitation": water,
-        "hourly_temp": hourly_temp,
-        "hourly_wind": hourly_wind,
-        "hourly_water": hourly_water
+        "hourly_temp": json_hourly_dataframe
     }
     return local_data  
 

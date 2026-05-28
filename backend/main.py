@@ -1,13 +1,14 @@
 #I am thinking of using Open Meteo's free API for the weather. They also have a historical API which includes weather data from 1940-now. Violet might find this useful for his data processing.
 
-#I need to use flask for this to get it set up and see how to receive/send http requests for the lat and long information and then the actual weather data. 
+#I need to use flask for this to get it set up and see how to receive/send http requests for the lat and long information and then the actual weather data.
+
+#You can access random information via /random and local information via /local?lat=##.##&long=##.##
 
 import openmeteo_requests
 import requests_cache
 from retry_requests import retry
 import pandas as pd
 import numpy as np
-import json
 from flask import Flask, request
 
 url = "https://api.open-meteo.com/v1/forecast"
@@ -24,37 +25,37 @@ def generate_location(min, max):
     result = np.random.uniform(min, max)
     return round(result, 5)
 
-def convert_kmh_to_word(current_wind):
-    if current_wind == 0:
-        air = "None"
-    elif current_wind < 19:
-        air = "Light"
-    elif current_wind < 39:
-        air = "Breezy"
-    elif current_wind < 49:
-        air = "Strong Breeze"
-    elif current_wind < 61:
-        air = "Very Windy"
-    elif current_wind < 88:
-        air = "Gale"
-    elif current_wind < 117:
-        air = "Bad Storm"
+def convert_kmh_to_word(kmh):
+    if kmh == 0:
+        result = "None"
+    elif kmh < 19:
+        result = "Light"
+    elif kmh < 39:
+        result = "Breezy"
+    elif kmh < 49:
+        result = "Strong Breeze"
+    elif kmh < 61:
+        result = "Very Windy"
+    elif kmh < 88:
+        result = "Gale"
+    elif kmh < 117:
+        result = "Bad Storm"
     else:
-        air = "Hurricane"
-    return air
+        result = "Hurricane"
+    return result
 
-def convert_mm_to_word(current_water):
-    if current_water == 0:
-        water = "None"
-    elif current_water < 3:
-        water = "Light"
-    elif current_water < 8:
-        water = "Moderate"
-    elif current_water < 50:
-        water = "Heavy"
+def convert_mm_to_word(mm):
+    if mm == 0:
+        result = "None"
+    elif mm < 3:
+        result = "Light"
+    elif mm < 8:
+        result = "Moderate"
+    elif mm < 50:
+        result = "Heavy"
     else:
-        water = "Violent"
-    return water
+        result = "Violent"
+    return result
 
 @app.route('/')
 def home():
@@ -69,7 +70,7 @@ def local():
             "latitude": lat,
             "longitude": long,
             "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
-            "hourly": ["temperature_2m"],
+            "hourly": ["temperature_2m", "precipitation", "wind_speed_10m"],
             "temperature_unit": "celsius",
         }
 
@@ -83,8 +84,11 @@ def local():
     air = convert_kmh_to_word(round(current_wind, None))
     water = convert_mm_to_word(round(current_water, None))
 
+    #Hourly temperature and date information
     hourly = response.Hourly()
     hourly_temp = hourly.Variables(0).ValuesAsNumpy()
+    hourly_water = hourly.Variables(1).ValuesAsNumpy()
+    hourly_wind = hourly.Variables(2).ValuesAsNumpy()
     hourly_data = {
     "date": pd.date_range(
             start = pd.to_datetime(hourly.Time(), unit = "s", utc = True),
@@ -95,15 +99,17 @@ def local():
     }
 
     hourly_data["temperature_2m"] = hourly_temp
-
+    hourly_data["precipitation"] = hourly_water
+    hourly_data["wind_speed_10m"] = hourly_wind
     hourly_dataframe = pd.DataFrame(data = hourly_data)
-
     hourly_dataframe['date'] = hourly_dataframe['date'].dt.strftime('%Y-%m-%d %H:%M')
-
     hourly_dataframe['temperature_2m'] = hourly_dataframe['temperature_2m'].round(0).astype(int)
-
+    hourly_dataframe['precipitation'] = hourly_dataframe['precipitation'].round(0).astype(int)
+    hourly_dataframe['wind_speed_10m'] = hourly_dataframe['wind_speed_10m'].round(0).astype(int)
     local_date = hourly_dataframe['date'].tolist()
     local_temp = hourly_dataframe['temperature_2m'].tolist()
+    local_water = hourly_dataframe['precipitation'].tolist()
+    local_wind = hourly_dataframe['wind_speed_10m'].tolist()
 
     local_data = {
         "latitude": lat,
@@ -111,11 +117,13 @@ def local():
         "location": None,#i need to get location name from violet
         "timezone": None,#i need to get location name from violet
         "timezone_abbreviation": None,#i need to get location name from violet
-        "temperature_2m": current_temp,
-        "wind": air,
-        "precipitation": water,
+        "current_temperature_2m": current_temp,
+        "current_wind": air,
+        "current_precipitation": water,
         "date": local_date,
-        "hourly_temp": local_temp
+        "hourly_temp": local_temp,
+        "hourly_water": local_water,
+        "hourly_wind": local_wind
     }
     return local_data  
 

@@ -7,6 +7,7 @@ import requests_cache
 from retry_requests import retry
 import pandas as pd
 import numpy as np
+import json
 from flask import Flask, request
 
 url = "https://api.open-meteo.com/v1/forecast"
@@ -101,7 +102,8 @@ def local():
 
     hourly_dataframe['temperature_2m'] = hourly_dataframe['temperature_2m'].round(0).astype(int)
 
-    json_hourly_dataframe = hourly_dataframe.to_json(orient='records')
+    local_date = hourly_dataframe['date'].tolist()
+    local_temp = hourly_dataframe['temperature_2m'].tolist()
 
     local_data = {
         "latitude": lat,
@@ -112,7 +114,8 @@ def local():
         "temperature_2m": current_temp,
         "wind": air,
         "precipitation": water,
-        "hourly_temp": json_hourly_dataframe
+        "date": local_date,
+        "hourly_temp": local_temp
     }
     return local_data  
 

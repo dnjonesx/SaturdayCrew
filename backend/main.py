@@ -89,10 +89,17 @@ def local():
     hourly_temp = hourly.Variables(0).ValuesAsNumpy()
     hourly_water = hourly.Variables(1).ValuesAsNumpy()
     hourly_wind = hourly.Variables(2).ValuesAsNumpy()
+
+    hourly_temp = hourly_temp[:24]
+    hourly_water = hourly_water[:24]
+    hourly_wind = hourly_wind[:24]
+
+    start_time = pd.to_datetime(hourly.Time(), unit = "s", utc = True)
+
     hourly_data = {
-    "date": pd.date_range(
-            start = pd.to_datetime(hourly.Time(), unit = "s", utc = True),
-            end =  pd.to_datetime(hourly.TimeEnd(), unit = "s", utc = True),
+        "date": pd.date_range(
+            start = start_time,
+            end = start_time + pd.Timedelta(hours = 24), # Fixed: Force exactly 24 hours from start
             freq = pd.Timedelta(seconds = hourly.Interval()),
             inclusive = "left"
         )
@@ -111,6 +118,16 @@ def local():
     local_water = hourly_dataframe['precipitation'].tolist()
     local_wind = hourly_dataframe['wind_speed_10m'].tolist()
 
+    local_water_word = []
+    for i in local_water:
+        result = convert_mm_to_word(i)
+        local_water_word.append(result)
+
+    local_wind_word = []
+    for i in local_wind:
+        result = convert_kmh_to_word(i)
+        local_wind_word.append(result)
+
     local_data = {
         "latitude": lat,
         "longitude": long,
@@ -122,8 +139,8 @@ def local():
         "current_precipitation": water,
         "date": local_date,
         "hourly_temp": local_temp,
-        "hourly_water": local_water,
-        "hourly_wind": local_wind
+        "hourly_water": local_water_word,
+        "hourly_wind": local_wind_word
     }
     return local_data  
 

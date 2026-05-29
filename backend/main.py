@@ -71,6 +71,7 @@ def local():
             "longitude": long,
             "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
             "hourly": ["temperature_2m", "precipitation", "wind_speed_10m"],
+            "daily": ["temperature_2m_max", "temperature_2m_min"],
             "temperature_unit": "celsius",
         }
 
@@ -128,6 +129,23 @@ def local():
         result = convert_kmh_to_word(i)
         local_wind_word.append(result)
 
+    #Daily min and max temperatures
+    daily = response.Daily()
+    daily_max = daily.Variables(0)
+    daily_min = daily.Variables(1)
+
+    daily_data = {
+        "date": pd.date_range(
+            start = pd.to_datetime(daily.Time(), unit = "s", utc = True),
+            end =  pd.to_datetime(daily.TimeEnd(), unit = "s", utc = True),
+            freq = pd.Timedelta(seconds = daily.Interval()),
+            inclusive = "left"
+        )
+    }
+
+    daily_max = daily_data['temperature_2m_max'].tolist()
+    daily_min = daily_data['temperature_2m_min'].tolist()
+
     local_data = {
         "latitude": lat,
         "longitude": long,
@@ -140,9 +158,11 @@ def local():
         "date": local_date,
         "hourly_temp": local_temp,
         "hourly_water": local_water_word,
-        "hourly_wind": local_wind_word
+        "hourly_wind": local_wind_word,
+        "daily_max": daily_max,
+        "daily_min": daily_min
     }
-    return local_data  
+    return local_data
 
 @app.route('/random')
 def random_weather():

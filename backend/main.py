@@ -71,7 +71,8 @@ def local():
             "longitude": long,
             "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
             "hourly": ["temperature_2m", "precipitation", "wind_speed_10m"],
-            "daily": ["temperature_2m_max", "temperature_2m_min"]
+            "daily": ["temperature_2m_max", "temperature_2m_min"],
+            "timezone": "auto"
         }
 
     responses = openmeteo.weather_api(url, params = local_params)
@@ -111,8 +112,8 @@ def local():
     hourly_dataframe = pd.DataFrame(data = hourly_data)
     hourly_dataframe['date'] = hourly_dataframe['date'].dt.strftime('%Y-%m-%d %H:%M')
     hourly_dataframe['temperature_2m'] = hourly_dataframe['temperature_2m'].round(1)
-    hourly_dataframe['precipitation'] = hourly_dataframe['precipitation'].round(0).astype(int)
-    hourly_dataframe['wind_speed_10m'] = hourly_dataframe['wind_speed_10m'].round(0).astype(int)
+    hourly_dataframe['precipitation'] = hourly_dataframe['precipitation']
+    hourly_dataframe['wind_speed_10m'] = hourly_dataframe['wind_speed_10m']
     local_date = hourly_dataframe['date'].tolist()
     local_temp = [round(float(t), 1) for t in hourly_dataframe['temperature_2m'].tolist()]
     local_water = hourly_dataframe['precipitation'].tolist()
@@ -174,7 +175,8 @@ def random_weather():
     random_params = {
             "latitude": random_lat,
             "longitude": random_long,
-            "current": ["temperature_2m", "precipitation", "wind_speed_10m"]
+            "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
+            "timezone": "auto"
         }
     responses = openmeteo.weather_api(url, params = random_params)
     response = responses[0]

@@ -71,15 +71,14 @@ def local():
             "longitude": long,
             "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
             "hourly": ["temperature_2m", "precipitation", "wind_speed_10m"],
-            "daily": ["temperature_2m_max", "temperature_2m_min"],
-            "temperature_unit": "celsius",
+            "daily": ["temperature_2m_max", "temperature_2m_min"]
         }
 
     responses = openmeteo.weather_api(url, params = local_params)
     response = responses[0]
     
     current = response.Current()
-    current_temp = round(current.Variables(0).Value(), 2)
+    current_temp = round(current.Variables(0).Value(), 1)
     current_water = current.Variables(1).Value()
     current_wind = current.Variables(2).Value()
     air = convert_kmh_to_word(round(current_wind, None))
@@ -100,7 +99,7 @@ def local():
     hourly_data = {
         "date": pd.date_range(
             start = start_time,
-            end = start_time + pd.Timedelta(hours = 24), # Fixed: Force exactly 24 hours from start
+            end = start_time + pd.Timedelta(hours = 24),
             freq = pd.Timedelta(seconds = hourly.Interval()),
             inclusive = "left"
         )
@@ -111,11 +110,11 @@ def local():
     hourly_data["wind_speed_10m"] = hourly_wind
     hourly_dataframe = pd.DataFrame(data = hourly_data)
     hourly_dataframe['date'] = hourly_dataframe['date'].dt.strftime('%Y-%m-%d %H:%M')
-    hourly_dataframe['temperature_2m'] = hourly_dataframe['temperature_2m'].round(0).astype(int)
+    hourly_dataframe['temperature_2m'] = hourly_dataframe['temperature_2m'].round(1)
     hourly_dataframe['precipitation'] = hourly_dataframe['precipitation'].round(0).astype(int)
     hourly_dataframe['wind_speed_10m'] = hourly_dataframe['wind_speed_10m'].round(0).astype(int)
     local_date = hourly_dataframe['date'].tolist()
-    local_temp = hourly_dataframe['temperature_2m'].tolist()
+    local_temp = [round(float(t), 1) for t in hourly_dataframe['temperature_2m'].tolist()]
     local_water = hourly_dataframe['precipitation'].tolist()
     local_wind = hourly_dataframe['wind_speed_10m'].tolist()
 
@@ -131,8 +130,11 @@ def local():
 
     #Daily min and max temperatures
     daily = response.Daily()
-    daily_max = daily.Variables(0)
-    daily_min = daily.Variables(1)
+    daily_max = daily.Variables(0).ValuesAsNumpy().tolist()
+    daily_min = daily.Variables(1).ValuesAsNumpy().tolist()
+
+    daily_max = [round(t, 1) for t in daily_max]
+    daily_min = [round(t, 1) for t in daily_min]
 
     daily_data = {
         "date": pd.date_range(
@@ -143,8 +145,8 @@ def local():
         )
     }
 
-    daily_max = daily_data['temperature_2m_max'].tolist()
-    daily_min = daily_data['temperature_2m_min'].tolist()
+    daily_data["temperature_2m_max"] = daily_max
+    daily_data["temperature_2m_min"] = daily_min
 
     local_data = {
         "latitude": lat,
@@ -152,10 +154,10 @@ def local():
         "location": None,#i need to get location name from violet
         "timezone": None,#i need to get location name from violet
         "timezone_abbreviation": None,#i need to get location name from violet
-        "current_temperature_2m": current_temp,
+        "current_temp": current_temp,
         "current_wind": air,
-        "current_precipitation": water,
-        "date": local_date,
+        "current_water": water,
+        "hours": local_date,
         "hourly_temp": local_temp,
         "hourly_water": local_water_word,
         "hourly_wind": local_wind_word,
@@ -172,13 +174,12 @@ def random_weather():
     random_params = {
             "latitude": random_lat,
             "longitude": random_long,
-            "current": ["temperature_2m", "precipitation", "wind_speed_10m"],
-            "temperature_unit": "celsius",
+            "current": ["temperature_2m", "precipitation", "wind_speed_10m"]
         }
     responses = openmeteo.weather_api(url, params = random_params)
     response = responses[0]
     current = response.Current()
-    current_temp = round(current.Variables(0).Value(), 2)
+    current_temp = round(current.Variables(0).Value(), 1)
     current_water = current.Variables(1).Value()
     current_wind = current.Variables(2).Value()
     air = convert_kmh_to_word(round(current_wind, None))
@@ -190,9 +191,9 @@ def random_weather():
         "location": None,#i need to get location name from violet
         "timezone": None,#i need to get location name from violet
         "timezone_abbreviation": None,#i need to get location name from violet
-        "temperature_2m": current_temp,
+        "temp": current_temp,
         "wind": air,
-        "precipitation": water
+        "water": water
     }
     return random_data  
 

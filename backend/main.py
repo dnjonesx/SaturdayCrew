@@ -1,8 +1,4 @@
-#I am thinking of using Open Meteo's free API for the weather. They also have a historical API which includes weather data from 1940-now. Violet might find this useful for his data processing.
-
-#I need to use flask for this to get it set up and see how to receive/send http requests for the lat and long information and then the actual weather data.
-
-#You can access random information via /random and local information via /local?lat=##.##&long=##.##
+#I am thinking of using Open Meteo's free API for the weather. 
 
 import openmeteo_requests
 import requests_cache
@@ -59,7 +55,7 @@ def convert_mm_to_word(mm):
 
 @app.route('/')
 def home():
-    return "This is the home page"
+    return "You can access random information via /random and local information via /local?lat=##.##&long=##.## - Soon we will be incorporating the ability to type in the name of a location instead of lat and long coordinates"
 
 @app.route('/local')
 def local():

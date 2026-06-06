@@ -6,11 +6,13 @@ from retry_requests import retry
 import pandas as pd
 import numpy as np
 from flask import Flask, request
+from flask_cors import CORS
 
 url = "https://api.open-meteo.com/v1/forecast"
 
 #set up Flask
 app = Flask(__name__)
+CORS(app)
 
 #Setting up API client with cache and retry
 cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)

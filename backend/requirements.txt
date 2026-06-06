@@ -6,3 +6,4 @@ retry-requests
 pandas
 numpy
 flask
+flask_cors

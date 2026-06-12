@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 9000
 
-CMD ["python", "main.py"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:9000", "main:app"]

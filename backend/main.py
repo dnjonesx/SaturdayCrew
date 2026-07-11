@@ -191,9 +191,15 @@ def random_weather():
         "location": None,#i need to get location name from violet
         "timezone": None,#i need to get location name from violet
         "timezone_abbreviation": None,#i need to get location name from violet
-        "temp": current_temp,
-        "wind": air,
-        "water": water
+        "current_temp": current_temp,
+        "current_wind": air,
+        "current_water": water,
+        "hours": None,
+        "hourly_temp": None,
+        "hourly_water": None,
+        "hourly_wind": None,
+        "daily_max": None,
+        "daily_min": None
     }
     return random_data  
 
